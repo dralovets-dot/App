@@ -1,16 +1,18 @@
-name: Build APK
+name: Bruce Android Build
 
-# когда запускать: вручную и при любом push в main
 on:
   workflow_dispatch:
   push:
+    branches: [ main, master ]
+  pull_request:
     branches: [ main, master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout sources
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Flutter
@@ -20,13 +22,13 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Get dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build APK (release, all ABI)
+        run: flutter build apk --release --target-platform android-arm,android-arm64,android-x64
 
-      - name: Upload APK artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
